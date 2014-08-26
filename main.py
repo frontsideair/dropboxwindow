@@ -75,4 +75,4 @@ def exit(session_name):
     session.pop(session_name)
 
 if __name__ == '__main__':
-    window.run()
+    window.run(host='0.0.0.0')
