@@ -10,12 +10,12 @@ APP_KEY = os.environ.get('APP_KEY')
 APP_SECRET = os.environ.get('APP_SECRET')
 window = Flask(__name__)
 window.secret_key = '1234asjfiensjand'
-#window.server_name = 'window.6nok.org'
 window.debug = True
 
 
 def flow(session_name):
     redir_url = url_for('redirect', session_name=session_name, _external=True)
+    redir_url = redir_url.replace('http', 'https')  # dirty hack
     this_session = session[session_name]
     return DropboxOAuth2Flow(APP_KEY, APP_SECRET, redir_url, this_session,
                              'csrf-token')
@@ -35,9 +35,9 @@ def expired(session_name):
 def index():
     session_name = gen_session_name(8)
     session[session_name] = {'expires': datetime.now()}
-    url = url_for('genkey', _external=True, session_name=session_name)  # TODO: _external
+    url = url_for('genkey', _external=True, session_name=session_name)
     window.logger.debug(url)
-    qrcode = pyqrcode.create(url, error='Q').text()
+    qrcode = pyqrcode.create(url, error='Q', version=4).text()
     qrcode = qrcode.replace('0', u'\u25a1').replace('1', u'\u25a0')
     return render_template('index.html', qrcode=qrcode, url=url)
 
