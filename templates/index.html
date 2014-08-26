@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<head>
+<title>Dropbox Window</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Dropbox Window</h1>
+    <div class="qrcode">
+        <textarea rows="32" cols="30" readonly="true">{{ qrcode }}</textarea>
+    </div>
+    <p class="link">
+    Link: <a href="{{ url }}">{{ url }}</a>
+    </p>
+</div>
+</body>
+</html>
