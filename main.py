@@ -8,6 +8,7 @@ import random
 
 APP_KEY = os.environ.get('APP_KEY')
 APP_SECRET = os.environ.get('APP_SECRET')
+HEROKU = os.environ.get('HEROKU')
 SECRET_KEY = '1234asjfiensjand'
 DEBUG = True
 
@@ -17,7 +18,8 @@ sessions = {}
 
 def flow():
     redir_url = url_for('redirect', _external=True)
-    redir_url = redir_url.replace('http', 'https')  # dirty hack for heroku
+    if HEROKU == 'true':
+        redir_url = redir_url.replace('http', 'https')  # dirty hack for heroku
     return DropboxOAuth2Flow(APP_KEY, APP_SECRET, redir_url, session, 'csrf')
 
 
@@ -48,6 +50,7 @@ def index():
 @window.route('/auth/<session_name>')
 def genkey(session_name):
     session = sessions.get(session_name)
+    window.logger.debug(session.get('name'))
     auth_url = flow().start()
     return render_template('auth.html', auth_url=auth_url)
 
@@ -55,12 +58,26 @@ def genkey(session_name):
 @window.route('/redir')
 def redirect():
     # TODO: session open check abort(403)
+    window.logger.debug(session.get('name'))
     try:
         access_token, _, _ = flow().finish(request.args)
-        session[session_name]['access_token'] = access_token
+        session['access_token'] = access_token
         return render_template('success.html')
-    except:
-        return render_template('error.html', error='Auth unsuccessful')
+    except DropboxOAuth2Flow.BadRequestException, e:
+        window.logger.exception(e)
+        return render_template('error.html', error=e)
+    except DropboxOAuth2Flow.BadStateException, e:
+        window.logger.exception(e)
+        return render_template('error.html', error=e)
+    except DropboxOAuth2Flow.CsrfException, e:
+        window.logger.exception(e)
+        return render_template('error.html', error=e)
+    except DropboxOAuth2Flow.NotApprovedException, e:
+        window.logger.exception(e)
+        return render_template('error.html', error=e)
+    except DropboxOAuth2Flow.ProviderException, e:
+        window.logger.exception(e)
+        return render_template('error.html', error=e)
 
 
 @window.route('/get')
