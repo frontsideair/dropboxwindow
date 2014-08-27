@@ -1,6 +1,6 @@
 from flask import (Flask, render_template, redirect, request, session, url_for,
                    jsonify)
-from dropbox.client import DropboxOAuth2Flow, DropboxClient
+from dropbox.client import DropboxOAuth2Flow
 from datetime import datetime
 import os
 import pyqrcode
@@ -8,17 +8,17 @@ import random
 
 APP_KEY = os.environ.get('APP_KEY')
 APP_SECRET = os.environ.get('APP_SECRET')
+SECRET_KEY = '1234asjfiensjand'
+DEBUG = True
+
 window = Flask(__name__)
-window.secret_key = '1234asjfiensjand'
-window.debug = True
+window.config.from_object(__name__)
+sessions = {}
 
-
-def flow(session_name):
-    redir_url = url_for('redirect', session_name=session_name, _external=True)
-    redir_url = redir_url.replace('http', 'https')  # dirty hack
-    this_session = session[session_name]
-    return DropboxOAuth2Flow(APP_KEY, APP_SECRET, redir_url, this_session,
-                             'csrf-token')
+def flow():
+    redir_url = url_for('redirect', _external=True)
+    redir_url = redir_url.replace('http', 'https')  # dirty hack for heroku
+    return DropboxOAuth2Flow(APP_KEY, APP_SECRET, redir_url, session, 'csrf')
 
 
 def gen_session_name(size):
@@ -26,17 +26,20 @@ def gen_session_name(size):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-def expired(session_name):
-    time_passed = datetime.now() - session[session_name]['expires']
+def expired():
+    time_passed = datetime.now() - session.get('created')
     return time_passed.seconds > 1800
 
 
 @window.route('/')
 def index():
     session_name = gen_session_name(8)
-    session[session_name] = {'expires': datetime.now()}
+    session['name'] = session_name
+    session['created'] = datetime.now()
+    sessions[session_name] = session
+    # maybe redirect to /<session_name>
     url = url_for('genkey', _external=True, session_name=session_name)
-    window.logger.debug(url)
+    # window.logger.debug(url)
     qrcode = pyqrcode.create(url, error='Q', version=4).text()
     qrcode = qrcode.replace('0', u'\u25a1').replace('1', u'\u25a0')
     return render_template('index.html', qrcode=qrcode, url=url)
@@ -44,35 +47,36 @@ def index():
 
 @window.route('/auth/<session_name>')
 def genkey(session_name):
-    if session_name in session and not expired(session_name):
-        auth_url = flow(session_name).start()
-        return render_template('auth.html', auth_url=auth_url)
-    else:
-        session.pop(session_name)
-        return render_template('error.html', error='Session not found')
+    session = sessions.get(session_name)
+    auth_url = flow().start()
+    return render_template('auth.html', auth_url=auth_url)
 
 
-@window.route('/redir/<session_name>', methods=['GET'])
-def redirect(session_name):
+@window.route('/redir')
+def redirect():
+    # TODO: session open check abort(403)
     try:
-        access_token, _, _ = flow(session_name).finish(request.query_params)
+        access_token, _, _ = flow().finish(request.args)
         session[session_name]['access_token'] = access_token
         return render_template('success.html')
     except:
         return render_template('error.html', error='Auth unsuccessful')
 
 
-@window.route('/get/<session_name>')
-def keyget(session_name):
-    if session_name in session and 'access_token' in session[session_name]:
-        return jsonify(access_token=session[session_name]['access_token'])
+@window.route('/get')
+def keyget():
+    if 'access_token' in session:
+        return jsonify(response='access', token=session.get('access_token'))
+    elif 'deauth_command' in session:
+        return jsonify(response='deauth')
     else:
-        return jsonify(access_token='null')
+        return jsonify(response='null')
 
 
-@window.route('/exit/<session_name>')
-def exit(session_name):
-    session.pop(session_name)
+@window.route('/exit')
+def exit():
+    session.pop('session_name', None)
+    return redirect(url_for('index')) # redirect to thanks
 
 if __name__ == '__main__':
     window.run(host='0.0.0.0')
