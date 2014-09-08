@@ -34,4 +34,14 @@ client.onError.addListener(function(error) {
     showError(error);
 });
 
+client.getAccountInfo(function(error, accountInfo) {
+    // handle error
+    // print accountInfo.name
+});
 
+var pickedFile = {"name": "", "data": ""}; // use filepicker
+
+client.writeFile(pickedFile.name, pickedFile.data, function(error, stat) {
+    // handle error
+    // alert file written
+});

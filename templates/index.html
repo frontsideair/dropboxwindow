@@ -2,14 +2,20 @@
 <head>
 <title>Dropbox Window</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+    @font-face {
+        font-family: 'qrcode';
+        src: url("{{ url_for('static', filename='qrcode.ttf') }}") format("truetype");
+    }
+</style>
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.10.2/dropbox.min.js"></script>
 </head>
 <body>
 <div class="container">
     <h1>Dropbox Window</h1>
-    <div class="qrcode">
-        <textarea rows="36" cols="34" readonly="true">{{ qrcode }}</textarea>
+    <div class="qr">
+        <textarea rows="35" cols="35" readonly="true">{{ qrcode }}</textarea>
     </div>
     <p class="link">
     Link: <a href="{{ url }}">{{ url }}</a>
