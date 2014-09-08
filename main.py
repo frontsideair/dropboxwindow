@@ -16,10 +16,9 @@ window = Flask(__name__)
 window.config.from_object(__name__)
 sessions = {}
 
+
 def flow():
-    redir_url = url_for('redirect', _external=True)
-    if HEROKU == 'true':
-        redir_url = redir_url.replace('http', 'https')  # dirty hack for heroku
+    redir_url = url_for('redir', _external=True, _scheme='https')
     return DropboxOAuth2Flow(APP_KEY, APP_SECRET, redir_url, session, 'csrf')
 
 
@@ -35,14 +34,13 @@ def expired():
 
 @window.route('/')
 def index():
-    session_name = gen_session_name(8)
-    session['name'] = session_name
+    name = gen_session_name(8)
+    session['name'] = name
     session['created'] = datetime.now()
-    sessions[session_name] = session
+    sessions[name] = session
     # maybe redirect to /<session_name>
-    url = url_for('genkey', _external=True, session_name=session_name)
-    # window.logger.debug(url)
-    qrcode = pyqrcode.create(url, error='Q', version=4).text()
+    url = url_for('genkey', _external=True, session_name=name, _scheme='https')
+    qrcode = pyqrcode.create(url, error='Q', version=4, mode='binary').text()
     qrcode = qrcode.replace('0', u'\u25a1').replace('1', u'\u25a0')
     return render_template('index.html', qrcode=qrcode, url=url)
 
@@ -56,7 +54,7 @@ def genkey(session_name):
 
 
 @window.route('/redir')
-def redirect():
+def redir():
     # TODO: session open check abort(403)
     window.logger.debug(session.get('name'))
     try:
@@ -90,10 +88,10 @@ def keyget():
         return jsonify(response='null')
 
 
-@window.route('/exit')
-def exit():
+@window.route('/logout')
+def logout():
     session.pop('session_name', None)
-    return redirect(url_for('index')) # redirect to thanks
+    return redirect(url_for('index'))  # redirect to thanks
 
 if __name__ == '__main__':
     window.run(host='0.0.0.0')
