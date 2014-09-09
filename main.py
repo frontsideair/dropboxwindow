@@ -40,7 +40,7 @@ def index():
     sessions[name] = session
     # maybe redirect to /<session_name>
     url = url_for('genkey', _external=True, session_name=name, _scheme='https')
-    qrcode = pyqrcode.create(url, error='Q', version=4, mode='binary').text()
+    qrcode = pyqrcode.create(url, error='Q', version=5, mode='binary').text()
     return render_template('index.html', qrcode=qrcode, url=url)
 
 
