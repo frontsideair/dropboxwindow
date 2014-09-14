@@ -1,9 +1,40 @@
-textarea {
-    line-height: 8px;
+#qrcode {
 }
 
-div.qr textarea {
+blockquote {
     font-family: 'qrcode';
     font-size: 8px;
     line-height: 8px;
+    width: 312px;
+    height: 312px;
+    border: 1px solid black;
+}
+
+input[type=file] {
+    width: 312px;
+    height: 312px;
+    opacity: 0;
+}
+
+#filepicker {
+    display: none;
+}
+
+#dropzone {
+    width: 312px;
+    height: 312px;
+    overflow: hidden;
+    border: 1px solid black;
+    margin-left: 40px;
+    margin-bottom: 16px;
+}
+
+#dropzone span {
+    width: 312px;
+    position: absolute;
+    text-align: center;
+}
+
+#logout {
+    margin-top: 16px;
 }

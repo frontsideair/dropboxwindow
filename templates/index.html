@@ -5,21 +5,28 @@
 <style>
     @font-face {
         font-family: 'qrcode';
-        src: url("{{ url_for('static', filename='qrcode.ttf') }}") format("truetype");
+        src: url({{ url_for('static', filename='qrcode.ttf') }}) format("truetype");
     }
 </style>
-<script src="{{ url_for('static', filename='script.js') }}"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.10.2/dropbox.min.js"></script>
 </head>
 <body>
 <div class="container">
     <h1>Dropbox Window</h1>
-    <div class="qr">
-        <textarea rows="39" cols="38" readonly="true">{{ qrcode }}</textarea>
+    <div id="qrcode">
+        <blockquote>{{ qrcode }}</blockquote>
+        <p class="link">
+        Scan QR code or visit: <input readonly="true" value="{{ url }}" />
+        </p>
     </div>
-    <p class="link">
-    Link: <a href="{{ url }}">{{ url }}</a>
-    </p>
+    <div id="filepicker">
+        <div id="dropzone">
+            <span>Drop Here!<br />(or click to pick a file)</span>
+            <input type="file" />
+        </div>
+        <span id="logout">Logout</span>
+    </div>
 </div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

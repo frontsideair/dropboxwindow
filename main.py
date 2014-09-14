@@ -78,14 +78,16 @@ def redir():
 
 
 @window.route('/get')
-def keyget():
+def getmessage():
     if 'access_token' in session:
-        return jsonify(response='access', token=session.get('access_token'))
-    elif 'deauth_command' in session:
-        return jsonify(response='deauth')
+        return jsonify(authorized='true')
     else:
-        return jsonify(response='null')
+        return jsonify(authorized='false')
 
+
+@window.route('/get/token')
+def gettoken():
+    return jsonify(token=session.get('access_token'))
 
 @window.route('/logout')
 def logout():

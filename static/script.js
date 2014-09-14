@@ -1,47 +1,95 @@
-var client = new Dropbox.Client({ key: "" });
+var getUrl = 'https://dropboxwindow.herokuapp.com/get';
+var token = 'q0dS5IDbgQEAAAAAAAAAIRM_7kTSWBiegg1RE8w_QhMz6St977WmHqr2ChcwistU';
+var header = {Authorization: 'Bearer ' + token};
+var $qrcode = $('#qrcode');
+var $filepicker = $('#filepicker');
+var loggedin = false;
 
-// authenticate user by polling access token
+$(function() {
+    $('input').click(function() { this.select(); });
 
-var showError = function(error) {
-    switch (error.status) {
-        case Dropbox.ApiError.INVALID_TOKEN:
-            // access token problem
-            break;
+    poll = setInterval(checkAuth, 10000);
 
-        case Dropbox.ApiError.NOT_FOUND:
-            // folder not there
-            break;
+    $(':file').change(function() {
+        putFile(this.files[0]);
+    });
 
-        case Dropbox.ApiError.OVER_QUOTA:
-            // over quota
-            break;
+    var filepicker = $('#dropzone');
 
-        case Dropbox.ApiError.RATE_LIMITED:
-            // try later
-            break;
+    filepicker.on('dragover', function() {
+        $(this).css('background', 'blue');
+    });
 
-        case Dropbox.ApiError.NETWORK_ERROR:
-            // network problem
-            break;
+    filepicker.on('dragleave', function() {
+        $(this).css('background', 'red');
+    })
+});
 
-        default:
-            // INVALID_PARAM, OAUTH_ERROR, INVALID_METHOD, etc.
-            // do something appropriate
+var checkAuth = function() {
+    $.getJSON('/get', function(r) {
+        if (r.authorized == 'true') {
+            if (!loggedin) {
+                $qrcode.toggle();
+                $filepicker.toggle();
+                loggedin = true;
+            }
+            // flash logged in, set token to response
+            console.log('gonna get token asap');
+            getToken();
+        }
+        else {
+            if (loggedin) {
+                $qrcode.toggle();
+                $filepicker.toggle();
+                loggedin = false;
+            }
+            // flash logged out, clear token
+            console.log('still waiting')
+        }
+    });
+}
+
+var getToken = function() {
+    $.getJSON('/get/token', function(r) {
+        token = r.token;
+    });
+}
+
+var getAccName = function() {
+    $.ajax({
+        url: 'https://api.dropbox.com/1/account/info',
+        type: 'GET',
+        headers: header,
+        dataType: 'json',
+        success: function(r) {
+            console.log(r.display_name);
+        }
+    });
+}
+
+var disableToken = function() {
+    $.ajax({
+        url: 'https://api.dropbox.com/1/disable_access_token',
+    type: 'POST',
+    headers: header,
+    dataType: 'json',
+    success: function(r) {
+        console.log(JSON.stringify(r));
     }
-};
+    });
+}
 
-client.onError.addListener(function(error) {
-    showError(error);
-});
-
-client.getAccountInfo(function(error, accountInfo) {
-    // handle error
-    // print accountInfo.name
-});
-
-var pickedFile = {"name": "", "data": ""}; // use filepicker
-
-client.writeFile(pickedFile.name, pickedFile.data, function(error, stat) {
-    // handle error
-    // alert file written
-});
+var putFile = function(file) {
+    $.ajax({
+        url: 'https://api-content.dropbox.com/1/files_put/auto/' + file.name,
+    type: 'PUT',
+    headers: $.extend({}, header),
+    dataType: 'json',
+    data: file,
+    processData: false,
+    contentType: file.type,
+    success: function(r) {
+        console.log(r.path.split('/').slice(-1) + ' ' + r.size);
+    }
+    });
+}
