@@ -1,6 +1,6 @@
 from flask import (Flask, render_template, redirect, request, session, url_for,
                    jsonify)
-from dropbox.client import DropboxOAuth2Flow
+from dropbox.client import DropboxOAuth2Flow, DropboxClient
 from datetime import datetime
 import os
 import pyqrcode
@@ -40,6 +40,7 @@ def index():
     sessions[name] = session
     # maybe redirect to /<session_name>
     url = url_for('genkey', _external=True, session_name=name, _scheme='https')
+    # j.mp shorten url http://dev.bitly.com/links.html#v3_shorten
     qrcode = pyqrcode.create(url, error='Q', version=5, mode='binary').text()
     return render_template('index.html', qrcode=qrcode, url=url)
 
@@ -91,6 +92,8 @@ def gettoken():
 
 @window.route('/logout')
 def logout():
+    if ('access_token' in session):
+        DropboxClient(session.get('access_token')).disable_access_token()
     session.pop('session_name', None)
     return redirect(url_for('index'))  # redirect to thanks
 

@@ -1,14 +1,13 @@
-var getUrl = 'https://dropboxwindow.herokuapp.com/get';
-var token = 'q0dS5IDbgQEAAAAAAAAAIRM_7kTSWBiegg1RE8w_QhMz6St977WmHqr2ChcwistU';
 var header = {Authorization: 'Bearer ' + token};
 var $qrcode = $('#qrcode');
 var $filepicker = $('#filepicker');
 var loggedin = false;
+var token = '';
 
 $(function() {
     $('input').click(function() { this.select(); });
 
-    poll = setInterval(checkAuth, 10000);
+    poll = setInterval(checkAuth, 5000);
 
     $(':file').change(function() {
         putFile(this.files[0]);
@@ -23,6 +22,8 @@ $(function() {
     filepicker.on('dragleave', function() {
         $(this).css('background', 'red');
     })
+
+    $('#logout').click(disableToken);
 });
 
 var checkAuth = function() {
@@ -32,18 +33,18 @@ var checkAuth = function() {
                 $qrcode.toggle();
                 $filepicker.toggle();
                 loggedin = true;
+                console.log('gonna get token asap');
+                getToken();
+                // flash logged in
             }
-            // flash logged in, set token to response
-            console.log('gonna get token asap');
-            getToken();
         }
         else {
             if (loggedin) {
                 $qrcode.toggle();
                 $filepicker.toggle();
                 loggedin = false;
+                // flash logged out, clear token
             }
-            // flash logged out, clear token
             console.log('still waiting')
         }
     });
@@ -52,6 +53,7 @@ var checkAuth = function() {
 var getToken = function() {
     $.getJSON('/get/token', function(r) {
         token = r.token;
+        console.log('got token');
     });
 }
 
@@ -74,7 +76,8 @@ var disableToken = function() {
     headers: header,
     dataType: 'json',
     success: function(r) {
-        console.log(JSON.stringify(r));
+        console.log('logged out');
+        logeedin = false;
     }
     });
 }
