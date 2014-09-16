@@ -1,0 +1,13 @@
+{
+  "name": "Dropbox Window",
+  "launch_path": "/",
+  "description": "Upload to Dropbox on an untrusted computer by scanning a QR code on your smartphone.",
+  "icons": {
+    "128": "/images/icon-128x128.png"
+  },
+  "developer": {
+    "name": "Fatih Altinok",
+    "url": "https://github.com/frontsideair"
+  },
+  "default_locale": "en",
+}

@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<head>
-<title>Dropbox Window</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-<div class="container">
-    <h1>Dropbox Window</h1>
-    <p class="link">
-    To authenticate session, go to: <a href="{{ auth_url }}">{{ auth_url }}</a>
-    </p>
-</div>
-</body>
-</html>
+{% extends "basic.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1>Dropbox Window</h1>
+        <p class="link">
+            To authenticate session, go to: <a href="{{ auth_url }}">{{ auth_url }}</a>
+        </p>
+    </div>
+{% endblock %}

@@ -1,5 +1,5 @@
 from flask import (Flask, render_template, redirect, request, session, url_for,
-                   jsonify)
+                   jsonify, send_from_directory)
 from dropbox.client import DropboxOAuth2Flow, DropboxClient
 from datetime import datetime
 import os
@@ -31,6 +31,13 @@ def expired():
     time_passed = datetime.now() - session.get('created')
     return time_passed.seconds > 1800
 
+
+@window.route('/robots.txt')
+@window.route('/humans.txt')
+@window.route('/qrcode.ttf')
+@window.route('/manifest.webapp')
+def serve_static_content():
+    return send_from_directory(window.static_folder, request.path[1:])
 
 @window.route('/')
 def index():
