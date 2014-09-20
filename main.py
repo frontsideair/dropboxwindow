@@ -62,7 +62,6 @@ def genkey(session_name):
 @window.route('/redir')
 def redir():
     # TODO: session open check abort(403)
-    window.logger.debug(session.get('name'))
     try:
         access_token, _, _ = flow().finish(request.args)
         session['access_token'] = access_token
