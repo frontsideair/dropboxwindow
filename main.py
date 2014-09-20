@@ -17,7 +17,7 @@ window.config.from_object(__name__)
 sessions = {}
 
 
-def flow():
+def flow(session):
     redir_url = url_for('redir', _external=True, _scheme='https')
     return DropboxOAuth2Flow(APP_KEY, APP_SECRET, redir_url, session, 'csrf')
 
@@ -55,7 +55,7 @@ def index():
 @window.route('/auth/<session_name>')
 def genkey(session_name):
     session = sessions.get(session_name)
-    auth_url = flow().start()
+    auth_url = flow(session).start()
     return render_template('auth.html', auth_url=auth_url)
 
 
@@ -63,7 +63,7 @@ def genkey(session_name):
 def redir():
     # TODO: session open check abort(403)
     try:
-        access_token, _, _ = flow().finish(request.args)
+        access_token, _, _ = flow(session).finish(request.args)
         session['access_token'] = access_token
         return render_template('success.html')
     except DropboxOAuth2Flow.BadRequestException, e:
