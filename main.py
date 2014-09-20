@@ -55,7 +55,6 @@ def index():
 @window.route('/auth/<session_name>')
 def genkey(session_name):
     session = sessions.get(session_name)
-    window.logger.debug(session.get('name'))
     auth_url = flow().start()
     return render_template('auth.html', auth_url=auth_url)
 
