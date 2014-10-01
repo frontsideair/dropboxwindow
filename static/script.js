@@ -1,4 +1,4 @@
-var header = {Authorization: 'Bearer ' + token};
+var header = '';
 var $qrcode = $('#qrcode');
 var $filepicker = $('#filepicker');
 var loggedin = false;
@@ -53,6 +53,7 @@ var checkAuth = function() {
 var getToken = function() {
     $.getJSON('/get/token', function(r) {
         token = r.token;
+        header = {Authorization: 'Bearer ' + token};
         console.log('got token');
     });
 }

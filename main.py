@@ -11,14 +11,18 @@ APP_SECRET = os.environ.get('APP_SECRET')
 HEROKU = os.environ.get('HEROKU')
 SECRET_KEY = '1234asjfiensjand'
 DEBUG = True
+if HEROKU == 'true':
+    scheme = 'https'
+else:
+    scheme = 'http'
 
 window = Flask(__name__)
 window.config.from_object(__name__)
-sessions = {}
+auth_tokens = {}
 
 
-def flow(session):
-    redir_url = url_for('redir', _external=True, _scheme='https')
+def flow():
+    redir_url = url_for('redir', _external=True, _scheme=scheme)
     return DropboxOAuth2Flow(APP_KEY, APP_SECRET, redir_url, session, 'csrf')
 
 
@@ -44,9 +48,8 @@ def index():
     name = gen_session_name(8)
     session['name'] = name
     session['created'] = datetime.now()
-    sessions[name] = session
     # maybe redirect to /<session_name>
-    url = url_for('genkey', _external=True, session_name=name, _scheme='https')
+    url = url_for('genkey', _external=True, session_name=name, _scheme=scheme)
     # j.mp shorten url http://dev.bitly.com/links.html#v3_shorten
     qrcode = pyqrcode.create(url, error='Q', version=5, mode='binary').text()
     return render_template('index.html', qrcode=qrcode, url=url)
@@ -54,8 +57,8 @@ def index():
 
 @window.route('/auth/<session_name>')
 def genkey(session_name):
-    session = sessions.get(session_name)
-    auth_url = flow(session).start()
+    session['name'] = session_name
+    auth_url = flow().start()
     return render_template('auth.html', auth_url=auth_url)
 
 
@@ -63,8 +66,8 @@ def genkey(session_name):
 def redir():
     # TODO: session open check abort(403)
     try:
-        access_token, _, _ = flow(session).finish(request.args)
-        session['access_token'] = access_token
+        access_token, _, _ = flow().finish(request.args)
+        auth_tokens[session['name']] = access_token
         return render_template('success.html')
     except DropboxOAuth2Flow.BadRequestException, e:
         window.logger.exception(e)
@@ -85,7 +88,7 @@ def redir():
 
 @window.route('/get')
 def getmessage():
-    if 'access_token' in session:
+    if session['name'] in auth_tokens:
         return jsonify(authorized='true')
     else:
         return jsonify(authorized='false')
@@ -93,13 +96,13 @@ def getmessage():
 
 @window.route('/get/token')
 def gettoken():
-    return jsonify(token=session.get('access_token'))
+    return jsonify(token=auth_tokens.get(session['name']))
 
 @window.route('/logout')
 def logout():
-    if ('access_token' in session):
-        DropboxClient(session.get('access_token')).disable_access_token()
-    session.pop('session_name', None)
+    if session['name'] in auth_tokens:
+        DropboxClient(auth_tokens.get(session['name'])).disable_access_token()
+    auth_tokens.pop(session['name'], None)
     return redirect(url_for('index'))  # redirect to thanks
 
 if __name__ == '__main__':
