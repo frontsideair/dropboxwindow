@@ -24,6 +24,7 @@ def flow():
 
 
 def gen_session_name(size):
+    # TODO: generate 4-word name from dict
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
     return ''.join(random.choice(chars) for _ in range(size))
 
@@ -40,15 +41,15 @@ def expired():
 def serve_static_content():
     return send_from_directory(window.static_folder, request.path[1:])
 
+
 @window.route('/')
 def index():
     name = gen_session_name(8)
     session['name'] = name
     session['created'] = datetime.now()
-    # maybe redirect to /<session_name>
+    # redirect to /<session_name>
     url = url_for('genkey', _external=True, session_name=name, _scheme=scheme)
-    # j.mp shorten url http://dev.bitly.com/links.html#v3_shorten
-    qrcode = pyqrcode.create(url, error='Q', version=5, mode='binary').text()
+    qrcode = pyqrcode.create(url, error='Q', version=4, mode='binary').text()
     return render_template('index.html', qrcode=qrcode, url=url)
 
 
@@ -62,6 +63,7 @@ def genkey(session_name):
 @window.route('/redir')
 def redir():
     # TODO: session open check abort(403)
+    # also remove history back to close tab
     try:
         access_token, _, _ = flow().finish(request.args)
         auth_tokens[session['name']] = access_token
@@ -94,6 +96,7 @@ def getmessage():
 @window.route('/get/token')
 def gettoken():
     return jsonify(token=auth_tokens.get(session['name']))
+
 
 @window.route('/logout')
 def logout():
