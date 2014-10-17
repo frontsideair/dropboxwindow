@@ -11,10 +11,7 @@ APP_SECRET = os.environ.get('APP_SECRET')
 HEROKU = os.environ.get('HEROKU')
 SECRET_KEY = '1234asjfiensjand'
 DEBUG = True
-if HEROKU == 'true':
-    scheme = 'https'
-else:
-    scheme = 'http'
+scheme = 'https' if HEROKU == 'true' else 'http'
 
 window = Flask(__name__)
 window.config.from_object(__name__)
