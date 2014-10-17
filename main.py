@@ -9,7 +9,7 @@ import random
 APP_KEY = os.environ.get('APP_KEY')
 APP_SECRET = os.environ.get('APP_SECRET')
 HEROKU = os.environ.get('HEROKU')
-SECRET_KEY = '1234asjfiensjand'
+SECRET_KEY = os.environ.get('FLASK_SECRET')
 DEBUG = True
 scheme = 'https' if HEROKU == 'true' else 'http'
 
