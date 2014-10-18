@@ -7,8 +7,10 @@
 
 # THANKS
 
-  Sepeth Kern - @sepeth
+  Sepeth Kern - @sepet
 
 # TECHNOLOGY COLOPHON
 
-  HTML5, CSS3, Google Web Starter Kit, Fontello, Flask, jQuery, etc.
+  HTML5, CSS3, Google Web Starter Kit, Fontello, Python (Pyqrcode, Flask,
+  Jinja2, virtualenvwrapper), Javascript (jQuery), Heroku, Cloudflare,
+  vim, git, Bitbucket, Ubuntu...
