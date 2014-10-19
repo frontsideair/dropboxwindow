@@ -5,13 +5,13 @@ $(function() {
   var checkAuth = function() {
     console.log('polling');
     $.getJSON('/get', function(r) {
-      if (r.authorized) {
+      if (r.authorized == 'true') {
         console.log('gonna get token asap');
         getToken();
-        $card.removeClass('flipped');
+        $card.addClass('flipped');
       }
       else {
-        $card.addClass('flipped');
+        $card.removeClass('flipped');
       }
     });
   };
