@@ -11,31 +11,31 @@ $(function() {
       else {
         toggle();
       }
-    })
-  }
+    });
+  };
 
   var getToken = function() {
     $.getJSON('/get/token', function(r) {
       box.header = {Authorization: 'Bearer ' + r.token};
-    })
-  }
+    });
+  };
 
   var logout = function() {
     $.getJSON('/logout', function(r) {
       toggle();
-    })
-  }
+    });
+  };
 
   var toggle = function() {
     // add conditionals
     $card.toggleClass('flipped');
-  }
+  };
 
   var getName = function() {
     $.getJSON('https://api.dropbox.com/1/account/info', function(r) {
       box.name = r.display_name;
-    })
-  }
+    });
+  };
 
   var putFile = function(file) {
     $.ajax({
@@ -51,15 +51,17 @@ $(function() {
       },
       failure: function() { console.log('upload failed'); }
     });
-  }
+  };
 
   var makeDropzone = function(element, input) {
     element.addEventListener('dragover', function(e) {
       console.log('dragover');
+      e.stopPropagation();
       e.preventDefault();
     });
     element.addEventListener('dragenter', function(e) {
       console.log('dragenter');
+      e.stopPropagation();
       e.preventDefault();
     });
     element.addEventListener('drop', function(e) {
@@ -75,7 +77,7 @@ $(function() {
     input.addEventListener('change', function() {
       handleFiles(input.files);
     });
-  }
+  };
 
   handleFiles = function(files) {
     for (var i=0; i<files.length; i++) {
@@ -84,7 +86,7 @@ $(function() {
       putFile(file);
       // show a progress bar or something?
     }
-  }
+  };
 
   $('.link input').click(function() { this.select(); }); // select auth link
 
@@ -103,5 +105,5 @@ var test = {
                    $('.default').show(); },
   t3: function() { $('.enter').show();
                    $('.default').hide(); }
-}
+};
 
