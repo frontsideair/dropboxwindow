@@ -65,23 +65,28 @@ $(function() {
       e.stopPropagation();
       e.preventDefault();
     });
+
     element.addEventListener('dragenter', function(e) {
       console.log('dragenter');
       e.stopPropagation();
       e.preventDefault();
     });
+
     element.addEventListener('drop', function(e) {
       console.log('dropped');
       e.preventDefault();
       handleFiles(e.dataTransfer.files);
       return false;
     });
+
     element.addEventListener('click', function(e) {
       console.log('clicked');
       input.click();
     });
+
     input.addEventListener('change', function() {
       handleFiles(input.files);
+      $('form').trigger('reset');
     });
   };
 
