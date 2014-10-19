@@ -5,12 +5,14 @@ $(function() {
   var checkAuth = function() {
     console.log('polling');
     $.getJSON('/get', function(r) {
-      if (r.authorized == 'true' && !box.loggedin) {
-        box.loggedin = true;
-        console.log('gonna get token asap');
-        getToken();
-        getName();
-        $card.addClass('flipped');
+      if (r.authorized == 'true') {
+        if (!box.loggedin) {
+          box.loggedin = true;
+          console.log('gonna get token asap');
+          getToken();
+          getName();
+          $card.addClass('flipped');
+        }
       }
       else if (box.loggedin) {
         box.loggedin = false;
