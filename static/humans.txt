@@ -11,6 +11,9 @@
 
 # TECHNOLOGY COLOPHON
 
-  HTML5, CSS3, Google Web Starter Kit, Fontello, Python (Pyqrcode, Flask,
-  Jinja2, virtualenvwrapper), Javascript (jQuery), Heroku, Cloudflare,
-  vim, git, Bitbucket, Ubuntu...
+  Languages: HTML5, CSS3, Javascript, Python
+  Software: vim, git, Ubuntu
+  Logo: Box designed by Nono Martinez Alonso from the Noun Project
+  Infrastructure: Heroku, Cloudflare, Bitbucket
+  Tools: Web Starter Kit, Fontello, Flask, Pyqrcode, jQuery, clrs.cc,
+    Purecss, Realfavicongenerator.net, NPM

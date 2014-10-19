@@ -3,7 +3,7 @@
   "launch_path": "/",
   "description": "Upload to Dropbox on an untrusted computer by scanning a QR code on your smartphone.",
   "icons": {
-    "128": "/images/icon-128x128.png"
+    "192": "/images/icon-192x192.png"
   },
   "developer": {
     "name": "Fatih Altinok",
