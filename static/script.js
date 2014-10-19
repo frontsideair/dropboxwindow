@@ -6,10 +6,10 @@ $(function() {
     $.getJSON('/get', function(r) {
       if (r.authorized) {
         getToken();
-        toggle();
+        $card.removeClass('flipped');
       }
       else {
-        toggle();
+        $card.addClass('flipped');
       }
     });
   };
@@ -22,13 +22,8 @@ $(function() {
 
   var logout = function() {
     $.getJSON('/logout', function(r) {
-      toggle();
+      $card.removeClass('flipped');
     });
-  };
-
-  var toggle = function() {
-    // add conditionals
-    $card.toggleClass('flipped');
   };
 
   var getName = function() {
@@ -95,7 +90,7 @@ $(function() {
   makeDropzone(document.getElementsByClassName('dropzone')[0],
       document.getElementsByTagName('input')[1]);
 
-  //poll = setInterval(checkAuth, 5000);
+  var poll = setInterval(checkAuth, 1000); // default to 5000
 });
 
 // for testing ui, not for production!
