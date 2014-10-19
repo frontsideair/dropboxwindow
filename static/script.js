@@ -1,16 +1,19 @@
 $(function() {
-  var box = {};
+  box = {}; // global for debugging
   var $card = $('.card');
 
   var checkAuth = function() {
     console.log('polling');
     $.getJSON('/get', function(r) {
-      if (r.authorized == 'true') {
+      if (r.authorized == 'true' && !box.loggedin) {
+        box.loggedin = true;
         console.log('gonna get token asap');
         getToken();
+        getName();
         $card.addClass('flipped');
       }
-      else {
+      else if (box.loggedin) {
+        box.loggedin = false;
         $card.removeClass('flipped');
       }
     });
@@ -26,6 +29,7 @@ $(function() {
   var logout = function() {
     $.getJSON('/logout', function(r) {
       $card.removeClass('flipped');
+      box = {};
       console.log('logged out');
     });
   };
@@ -33,6 +37,7 @@ $(function() {
   var getName = function() {
     $.getJSON('https://api.dropbox.com/1/account/info', function(r) {
       box.name = r.display_name;
+      console.log('welcome ' + box.name);
     });
   };
 
