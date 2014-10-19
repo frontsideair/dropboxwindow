@@ -34,6 +34,11 @@ def expired():
     return time_passed.seconds > 1800
 
 
+def purge_sessions():
+    # TODO: purge sessions older than 30 mins
+    pass
+
+
 @window.route('/robots.txt')
 @window.route('/humans.txt')
 @window.route('/qrcode.ttf')
@@ -63,7 +68,6 @@ def genkey(session_name):
 @window.route('/redir')
 def redir():
     # TODO: session open check abort(403)
-    # also remove history back to close tab
     try:
         access_token, _, _ = flow().finish(request.args)
         auth_tokens[session['name']] = access_token
@@ -102,8 +106,7 @@ def gettoken():
 def logout():
     if session['name'] in auth_tokens:
         DropboxClient(auth_tokens.get(session['name'])).disable_access_token()
-    auth_tokens.pop(session['name'], None)
-    return redirect(url_for('index'))  # redirect to thanks
+        auth_tokens.pop(session['name'], None)
 
 if __name__ == '__main__':
     window.run(host='0.0.0.0')
