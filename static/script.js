@@ -1,10 +1,12 @@
 $(function() {
   var box = {};
-  $card = $('.card');
+  var $card = $('.card');
 
   var checkAuth = function() {
+    console.log('polling');
     $.getJSON('/get', function(r) {
       if (r.authorized) {
+        console.log('gonna get token asap');
         getToken();
         $card.removeClass('flipped');
       }
@@ -17,12 +19,14 @@ $(function() {
   var getToken = function() {
     $.getJSON('/get/token', function(r) {
       box.header = {Authorization: 'Bearer ' + r.token};
+      console.log('got token');
     });
   };
 
   var logout = function() {
     $.getJSON('/logout', function(r) {
       $card.removeClass('flipped');
+      console.log('logged out');
     });
   };
 
