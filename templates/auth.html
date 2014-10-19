@@ -1,10 +1,15 @@
-{% extends "basic.html" %}
+{% extends "base.html" %}
 
 {% block content %}
     <div class="container">
         <h1>Dropbox Window</h1>
-        <p class="link">
+        <p class="not-auth">
             To authenticate session, go to: <a href="{{ auth_url }}">{{ auth_url }}</a>
         </p>
+        <p class="auth">
+        Session authenticated! Click <a href="{{ deauth_url }}">here</a> to deauth.
+        </p>
     </div>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 {% endblock %}
