@@ -1,45 +1,94 @@
 @font-face {
-    font-family: 'qrcode';
-    src: url('qrcode.ttf') format('truetype');
+  font-family: 'qrcode';
+  src: url('qrcode.ttf') format('truetype');
 }
 
-#qrcode {
+.container {
+  text-align: center;
+  perspective: 1000px;
+  -webkit-perspective: 1000;
+  position: relative;
+}
+
+.container .card.flipped {
+  transform: rotateY(-180deg);
+}
+
+.container .card {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transition: 1s;
+  -moz-backface-visibility: hidden ;
+  /* if parent's backface is visible, firefox shows backface of child
+   * if not, it messes up chrome's z-index, i had no choice but this */
+  width: 100%;
+  height: 100%;
+}
+
+.container .card .face {
+  position: absolute;
+  backface-visibility: hidden ;
+  width: 100%;
+  height: 100%;
+}
+
+.container .card .qrcode {
+  z-index: 2;
+  background: white;
+}
+
+.container .card .filepicker {
+  z-index: 3;
+  transform: rotateY(-180deg);
+  background: white;
+}
+
+h1 {
+  font-size: 4em;
+  margin: .2em;
+  line-height: .85em;
+}
+
+img.fork {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+  opacity: .75;
 }
 
 blockquote {
-    font-family: 'qrcode';
-    font-size: 8px;
-    line-height: 8px;
-    width: 312px;
-    height: 312px;
-    border: 1px solid black;
+  font-family: 'qrcode';
+  font-size: 8px;
+  line-height: 8px;
+  width: 280px;
+  height: 280px;
+  border: 1px solid black;
+  margin: auto;
 }
 
 input[type=file] {
-    width: 312px;
-    height: 312px;
-    opacity: 0;
+  display: none;
 }
 
-#filepicker {
-    display: none;
+.dropzone {
+  width: 280px;
+  height: 280px;
+  overflow: hidden;
+  border: 1px solid black;
+  margin: auto;
+  box-sizing: border-box;
+  padding: 24px;
+  padding-top: 64px;
+  padding-bottom: 64px;
+  line-height: 48px;
 }
 
-#dropzone {
-    width: 312px;
-    height: 312px;
-    overflow: hidden;
-    border: 1px solid black;
-    margin-left: 40px;
-    margin-bottom: 16px;
+.dropzone .enter {
+  display: none;
+  line-height: 150px;
 }
 
-#dropzone span {
-    width: 312px;
-    position: absolute;
-    text-align: center;
-}
-
-#logout {
-    margin-top: 16px;
+.link {
+  margin: .5em;
 }

@@ -1,99 +1,107 @@
-var header = '';
-var $qrcode = $('#qrcode');
-var $filepicker = $('#filepicker');
-var loggedin = false;
-var token = '';
-
 $(function() {
-    $('input').click(function() { this.select(); });
+  var box = {};
+  $card = $('.card');
 
-    poll = setInterval(checkAuth, 5000);
-
-    $(':file').change(function() {
-        putFile(this.files[0]);
-    });
-
-    var filepicker = $('#dropzone');
-
-    filepicker.on('dragover', function() {
-        $(this).css('background', 'blue');
-    });
-
-    filepicker.on('dragleave', function() {
-        $(this).css('background', 'red');
+  var checkAuth = function() {
+    $.getJSON('/get', function(r) {
+      if (r.authorized) {
+        getToken();
+        toggle();
+      }
+      else {
+        toggle();
+      }
     })
+  }
 
-    $('#logout').click(disableToken);
+  var getToken = function() {
+    $.getJSON('/get/token', function(r) {
+      box.header = {Authorization: 'Bearer ' + r.token};
+    })
+  }
+
+  var logout = function() {
+    $.getJSON('/logout', function(r) {
+      toggle();
+    })
+  }
+
+  var toggle = function() {
+    // add conditionals
+    $card.toggleClass('flipped');
+  }
+
+  var getName = function() {
+    $.getJSON('https://api.dropbox.com/1/account/info', function(r) {
+      box.name = r.display_name;
+    })
+  }
+
+  var putFile = function(file) {
+    $.ajax({
+      url: 'https://api-content.dropbox.com/1/files_put/auto/' + file.name,
+      type: 'PUT',
+      headers: box.header,
+      dataType: 'json',
+      data: file,
+      processData: false,
+      contentType: file.type,
+      success: function(r) {
+        console.log(r.path.split('/').slice(-1) + ' ' + r.size);
+      },
+      failure: function() { console.log('upload failed'); }
+    });
+  }
+
+  var makeDropzone = function(element, input) {
+    element.addEventListener('dragover', function(e) {
+      console.log('dragover');
+      e.preventDefault();
+    });
+    element.addEventListener('dragenter', function(e) {
+      console.log('dragenter');
+      e.preventDefault();
+    });
+    element.addEventListener('drop', function(e) {
+      console.log('dropped');
+      e.preventDefault();
+      handleFiles(e.dataTransfer.files);
+      return false;
+    });
+    element.addEventListener('click', function(e) {
+      console.log('clicked');
+      input.click();
+    });
+    input.addEventListener('change', function() {
+      handleFiles(input.files);
+    });
+  }
+
+  handleFiles = function(files) {
+    for (var i=0; i<files.length; i++) {
+      var file = files[i];
+      console.log('it\'s a file: ' + file.name);
+      putFile(file);
+      // show a progress bar or something?
+    }
+  }
+
+  $('.link input').click(function() { this.select(); }); // select auth link
+
+  $('.logout').click(logout);
+
+  makeDropzone(document.getElementsByClassName('dropzone')[0],
+      document.getElementsByTagName('input')[1]);
+
+  //poll = setInterval(checkAuth, 5000);
 });
 
-var checkAuth = function() {
-    $.getJSON('/get', function(r) {
-        if (r.authorized == 'true') {
-            if (!loggedin) {
-                $qrcode.toggle();
-                $filepicker.toggle();
-                loggedin = true;
-                console.log('gonna get token asap');
-                getToken();
-                // flash logged in
-            }
-        }
-        else {
-            if (loggedin) {
-                $qrcode.toggle();
-                $filepicker.toggle();
-                loggedin = false;
-                // flash logged out, clear token
-            }
-            console.log('still waiting')
-        }
-    });
+// for testing ui, not for production!
+var test = {
+  t1: function() { $('.card').toggleClass('flipped'); },
+  t2: function() { $('.enter').hide();
+                   $('.default').show(); },
+  t3: function() { $('.enter').show();
+                   $('.default').hide(); }
 }
 
-var getToken = function() {
-    $.getJSON('/get/token', function(r) {
-        token = r.token;
-        header = {Authorization: 'Bearer ' + token};
-        console.log('got token');
-    });
-}
-
-var getAccName = function() {
-    $.ajax({
-        url: 'https://api.dropbox.com/1/account/info',
-        type: 'GET',
-        headers: header,
-        dataType: 'json',
-        success: function(r) {
-            console.log(r.display_name);
-        }
-    });
-}
-
-var disableToken = function() {
-    $.ajax({
-        url: 'https://api.dropbox.com/1/disable_access_token',
-    type: 'POST',
-    headers: header,
-    dataType: 'json',
-    success: function(r) {
-        console.log('logged out');
-        logeedin = false;
-    }
-    });
-}
-
-var putFile = function(file) {
-    $.ajax({
-        url: 'https://api-content.dropbox.com/1/files_put/auto/' + file.name,
-    type: 'PUT',
-    headers: $.extend({}, header),
-    dataType: 'json',
-    data: file,
-    processData: false,
-    contentType: file.type,
-    success: function(r) {
-        console.log(r.path.split('/').slice(-1) + ' ' + r.size);
-    }
-    });
-}
