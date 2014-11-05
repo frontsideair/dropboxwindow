@@ -10,8 +10,8 @@ APP_KEY = os.environ.get('APP_KEY')
 APP_SECRET = os.environ.get('APP_SECRET')
 HEROKU = os.environ.get('HEROKU')
 SECRET_KEY = os.environ.get('FLASK_SECRET')
-DEBUG = True
-scheme = 'https' if HEROKU == 'true' else 'http'
+DEBUG = os.environ.get('FLASK_DEBUG')
+scheme = 'https' if HEROKU == 'True' else 'http'
 
 window = Flask(__name__)
 window.config.from_object(__name__)
@@ -62,7 +62,7 @@ def index():
 def genkey(session_name):
     session['name'] = session_name
     auth_url = flow().start()
-    return render_template('auth.html', auth_url=auth_url)
+    return render_template('auth.html', auth_url=auth_url, name=session_name)
 
 
 @window.route('/redir')
@@ -76,14 +76,12 @@ def redir():
         window.logger.exception(e)
         return render_template('error.html', error=e)
     except DropboxOAuth2Flow.BadStateException, e:
-        window.logger.exception(e)
-        return render_template('error.html', error=e)
+        return redirect('/auth/' + session['name'])
     except DropboxOAuth2Flow.CsrfException, e:
         window.logger.exception(e)
         return render_template('error.html', error=e)
     except DropboxOAuth2Flow.NotApprovedException, e:
-        window.logger.exception(e)
-        return render_template('error.html', error=e)
+        return redirect('/auth/' + session['name'])
     except DropboxOAuth2Flow.ProviderException, e:
         window.logger.exception(e)
         return render_template('error.html', error=e)
@@ -104,9 +102,13 @@ def gettoken():
 
 @window.route('/logout')
 def logout():
-    if session['name'] in auth_tokens:
+    try:
         DropboxClient(auth_tokens.get(session['name'])).disable_access_token()
         auth_tokens.pop(session['name'], None)
+        return render_template('logged_out.html')
+    except:
+        return render_template('error.html', error='Something went wrong.\
+                Probably you\'re already logged out.')
 
 if __name__ == '__main__':
     window.run(host='0.0.0.0')
