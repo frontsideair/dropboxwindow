@@ -16,4 +16,4 @@
   Logo: Box designed by Nono Martinez Alonso from the Noun Project
   Infrastructure: Heroku, Cloudflare, Bitbucket
   Tools: Web Starter Kit, Fontello, Flask, Pyqrcode, jQuery, clrs.cc,
-    Purecss, Realfavicongenerator.net, NPM
+    Purecss, Realfavicongenerator.net, NPM, Webdevchecklist
