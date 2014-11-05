@@ -106,15 +106,6 @@ $(function() {
   makeDropzone(document.getElementsByClassName('dropzone')[0],
       document.getElementsByTagName('input')[1]);
 
-  var poll = setInterval(checkAuth, 1000); // default to 5000
+  var poll = setInterval(checkAuth, 5000); // default to 5000
 });
-
-// for testing ui, not for production!
-var test = {
-  t1: function() { $('.card').toggleClass('flipped'); },
-  t2: function() { $('.enter').hide();
-                   $('.default').show(); },
-  t3: function() { $('.enter').show();
-                   $('.default').hide(); }
-};
 
