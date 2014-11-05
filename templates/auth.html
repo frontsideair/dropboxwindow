@@ -3,13 +3,9 @@
 {% block content %}
     <div class="container">
         <h1>Dropbox Window</h1>
-        <p class="not-auth">
-            To authenticate session, go to: <a href="{{ auth_url }}">{{ auth_url }}</a>
-        </p>
-        <p class="auth">
-        Session authenticated! Click <a href="/logout">here</a> to deauth.
-        </p>
+        <div class="not-auth">
+          <p>Do you want to authorize the client "{{ name }}" to upload files to your Dropbox under "Apps/Window"?</p>
+          <a href="{{ auth_url }}" class="pure-button">Authorize</a>
+        </div>
     </div>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
 {% endblock %}
