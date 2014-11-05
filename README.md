@@ -3,6 +3,8 @@ Dropbox Window
 
 Scan a QR code on your phone to upload files on an untrusted PC.
 
+Note: This software is in alpha state. I know some things are broken, I'll fix them eventually.
+
 Usage
 -----
 
@@ -13,6 +15,8 @@ Point the browser to [Dropbox Window](https://db.6nok.org) and scan the QR code 
 phone. Grant access on your phone, and voila! You can upload files by simply
 dragging and dropping. Deauthorize using either the browser or your phone. 
 Your password is safe with you.
+
+Read more about it on my [Medium](https://medium.com/@frontsideair/a-summer-spent-studying-part-ii-c038f87e60de).
 
 Running
 -------
