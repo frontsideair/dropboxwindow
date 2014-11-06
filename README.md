@@ -26,8 +26,10 @@ variables.) If you want to run on local machine, you need [Python 2.7](https://w
 [pip](https://www.python.org/downloads/) and [foreman](https://www.python.org/downloads/) (optional).
 If you have them all, run this in the project directory:
 
-```pip install -r requirements.txt
-foreman run web```
+```
+pip install -r requirements.txt
+foreman run web
+```
 
 and check [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
