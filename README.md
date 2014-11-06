@@ -22,9 +22,14 @@ Running
 -------
 
 Clone this repository and push to Heroku. (Don't forget to set environment
-variables.) If you want to run on local machine, run:
+variables.) If you want to run on local machine, you need [Python 2.7](https://www.python.org/downloads/),
+[pip](https://www.python.org/downloads/) and [foreman](https://www.python.org/downloads/) (optional).
+If you have them all, run this in the project directory:
 
-```foreman run web```
+```pip install -r requirements.txt
+foreman run web```
+
+and check [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
 License
 -------
